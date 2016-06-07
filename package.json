@@ -19,5 +19,21 @@
   "bugs": {
     "url": "https://github.com/CarlJKashnier/nightlife2/issues"
   },
-  "homepage": "https://github.com/CarlJKashnier/nightlife2#readme"
+  "homepage": "https://github.com/CarlJKashnier/nightlife2#readme",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "connect-mongostore": "^0.1.4",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "mongo": "^0.1.0",
+    "mongoose": "^4.4.20",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "socket.io": "^1.4.6",
+    "yelp": "^1.0.1"
+  },
+  "devDependencies": {
+    "dotenv": "^2.0.0",
+    "morgan": "^1.7.0"
+  }
 }

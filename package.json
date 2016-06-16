@@ -23,6 +23,7 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "connect-mongostore": "^0.1.4",
+    "ejs": "^2.4.2",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "mongo": "^0.1.0",

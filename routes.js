@@ -12,18 +12,21 @@ module.exports = function(app, passport) {
   });
 
   app.get('/', function(req, res){
-    yelp.search({ term: 'Bar', location: 'Cleveland' })
-    .then(function (data) {
-      res.send(data);
-    })
-    .catch(function (err) {
-      //console.error(err);
-    }
-  );
+    res.render('index.ejs', {
+        user: req.user,
+    });
   });
 
-
-
+/*
+yelp.search({ term: 'Bar', location: 'Cleveland' })
+.then(function (data) {
+  res.send(data);
+})
+.catch(function (err) {
+  //console.error(err);
+}
+);
+*/
 
 
 

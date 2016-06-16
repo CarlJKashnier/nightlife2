@@ -9,11 +9,24 @@ var MongoStore = require('connect-mongostore')(session);
 var mongo = require('mongodb');
 var morgan = require('morgan');
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 var Yelp = require('yelp');
+//Keeps track of last Search
+var sess;
 
+var yelp = new Yelp({
+  consumer_key: process.env.yelpConsumerKey,
+  consumer_secret: process.env.yelpConsumerSecret,
+  token: process.env.yelpToken,
+  token_secret: process.env.yelpTokenSecret,
+});
+
+server.listen(process.env.PORT||8888);
+console.log('Running Server: ' + process.env.PORT || 8888);
 mongoose.connect(process.env.MONGOLAB_URI);
 //Debugging
+
 app.use(morgan('dev'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -31,6 +44,7 @@ app.use(session({
     saveUninitialized: true,
     resave: true
 }));
+
 //Passport for log in
 app.use(passport.initialize());
 //Passport to select session
@@ -39,6 +53,19 @@ app.use(passport.session());
 require('./routes.js')(app, passport);
 //Allow logins
 require('./passport.js')(passport);
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
-var server = app.listen(process.env.PORT || 8888);
-console.log("Server running on port: " + (process.env.PORT || 8888));
+io.on('connection', function(socket) {
+    socket.on('chat message', function(msg) {
+      var clientID = socket.id;
+      yelp.search({ term: 'Bar', location: msg })
+      .then(function (data) {
+        io.to(clientID).emit('yelp stuff',data);
+      })
+      .catch(function (err) {
+        //console.error(err);
+      }
+      );
+    });
+});

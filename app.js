@@ -53,7 +53,7 @@ app.use(passport.session());
 require('./routes.js')(app, passport);
 //Allow logins
 require('./passport.js')(passport);
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');;
 app.use(express.static('public'));
 
 io.on('connection', function(socket) {

@@ -4,7 +4,7 @@
   "description": "A night life coordnation app that relies on the Yelp API to find local bars and MongoDB to store where people are going.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error2: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

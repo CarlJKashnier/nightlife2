@@ -1,7 +1,7 @@
 var User = require('./users.js');
 var mongo = require('mongodb');
 var Yelp = require('yelp');
-require('./passport.js');
+require('./passport.js');;
 
 module.exports = function(app, passport) {
   var yelp = new Yelp({

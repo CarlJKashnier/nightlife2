@@ -12,24 +12,29 @@ var http = require('http').Server(app);
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var Yelp = require('yelp');
+var async = require('async');
+var returnedData = [];
+var dataToReturn = {};
 //Keeps track of last Search
 var sess;
 
 var yelp = new Yelp({
-  consumer_key: process.env.yelpConsumerKey,
-  consumer_secret: process.env.yelpConsumerSecret,
-  token: process.env.yelpToken,
-  token_secret: process.env.yelpTokenSecret,
+    consumer_key: process.env.yelpConsumerKey,
+    consumer_secret: process.env.yelpConsumerSecret,
+    token: process.env.yelpToken,
+    token_secret: process.env.yelpTokenSecret,
 });
 
-server.listen(process.env.PORT||8888);
+server.listen(process.env.PORT || 8888);
 console.log('Running Server: ' + process.env.PORT || 8888);
 mongoose.connect(process.env.MONGOLAB_URI);
 //Debugging
 
 app.use(morgan('dev'));
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 app.use(bodyParser.json());
 //Save Session in DB not memory -- Heroku gives nasty warnings about memory plus the users are logged out everyday during the server's sleep phase if you don't buy a dedicated dyno
@@ -39,33 +44,90 @@ app.use(session({
     },
     store: new MongoStore({
         mongooseConnection: mongoose.connection
-      }),
+    }),
     secret: 'anystringoftext',
     saveUninitialized: true,
     resave: true
 }));
-
+app.use(express.static('public'));
 //Passport for log in
 app.use(passport.initialize());
 //Passport to select session
 app.use(passport.session());
-//A routes file for all the various routes
-require('./routes.js')(app, passport);
+
 //Allow logins
 require('./passport.js')(passport);
-app.set('view engine', 'ejs');;
-app.use(express.static('public'));
+app.set('view engine', 'ejs');
+
 
 io.on('connection', function(socket) {
+    console.log("A User Connected");
     socket.on('chat message', function(msg) {
-      var clientID = socket.id;
-      yelp.search({ term: 'Bar', location: msg })
-      .then(function (data) {
-        io.to(clientID).emit('yelp stuff',data);
-      })
-      .catch(function (err) {
-        //console.error(err);
-      }
-      );
+        console.log("A search");
+        var clientID = socket.id;
+        yelp.search({
+                term: 'Bar',
+                location: msg
+            })
+            .then(function(data) {
+                var preparedData = renderData(data, clientID);
+                //console.log(prepairedData);
+                //io.to(clientID).emit('yelp stuff',data);
+            })
+            .catch(function(err) {
+                console.error(err);
+            });
     });
 });
+
+//A routes file for all the various routes
+require('./routes.js')(app, passport);
+
+function renderData(data, clientID) {
+    console.log("in render");
+    var relevantData = data.businesses;
+    dataToReturn = relevantData;
+    //console.log('relevantData',relevantData);
+    var i = 1;
+    for (var prop in relevantData) {
+        findDataAndReturn(relevantData[prop].name, relevantData[prop].phone, relevantData[prop].rating, relevantData[prop].snippet_text, relevantData[prop].image_url, clientID);
+        console.log(i);
+        i++;
+    }
+
+}
+
+
+function findDataAndReturn(name, phone, rating, description, image, clientID) {
+    console.log("in find and return");
+    mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
+        db.collection("nla").findOne({
+            "phone": phone
+        }, function(err, result) {
+            if (result === null) {
+
+                returnedData.push(["name:" + name, "phone:" + phone, "rating:" + rating, "description:" + description, "image:" + image, "count:" + result]);
+                console.log(returnedData.length + ":" + dataToReturn.length);
+                if (returnedData.length == dataToReturn.length) {
+                    io.to(clientID).emit('yelp stuff', JSON.stringify(returnedData));
+                    returnedData = [];
+                    console.log("should be found");
+
+                }
+
+
+            } else {
+
+                returnedData.push(["name:" + name, "phone:" + phone, "rating:" + rating, "description:" + description, "image:" + image, "count:" + result.count]);
+                console.log(returnedData.length + ":" + dataToReturn.length);
+                if (returnedData.length == dataToReturn.length) {
+                    io.to(clientID).emit('yelp stuff', JSON.stringify(returnedData));
+                    returnedData = [];
+                    console.log("should be found");
+
+                }
+
+            }
+        });
+    });
+}

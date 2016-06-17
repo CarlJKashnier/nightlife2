@@ -17,7 +17,7 @@ module.exports = function(passport) {
     passport.use(new FacebookStrategy({
             clientID: process.env.facebook_api_key,
             clientSecret: process.env.facebook_api_secret,
-            callbackURL: 'https://warm-sands-51936.herokuapp.com/auth/facebook/callback'
+            callbackURL: 'http://localhost:8888/auth/facebook/callback'
         },
 
         function(accessToken, refreshToken, profile, callback) {
@@ -31,7 +31,7 @@ module.exports = function(passport) {
                         return callback(null, user);
                     else {
                         var newUser = new User();
-                        //console.log(profile);
+                        console.log(profile)
                         newUser.facebook.id = profile.id;
                         newUser.facebook.token = accessToken;
                         newUser.facebook.name = profile.displayName;

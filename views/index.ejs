@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
         var socket = io.connect('http://localhost:8888');
+        console.log(socket);
 
-        socket.on('yelp stuff', function (data) {
-        //  renderResults(data);
-        $('#results').text(JSON.stringify(data));;
+        socket.on('yelp stuff', function(data) {
+            //  renderResults(data);
+            $('#results').text(JSON.stringify(data));
+            console.log(JSON.stringify(data));
         });
 
         if (document.cookie.length > 0) {
@@ -30,17 +33,17 @@
             //$('#searchCity').val('');
             return false;
         });
+
     });
 </script>
-<script>
 
-</script>
+
 <head>
     <meta charset="utf-8">
     <title>Where are you going tonight?</title>
     <!-- Latest compiled and minified CSS -->
 
-<script src="socket.io.js"></script>
+
 
 </head>
 
@@ -48,14 +51,19 @@
     <div style="text-align: center">
         <h1>Where are you going tonight?</h1>
         <h4>Nightlife Coordnation by: Carl Kashnier</h4>
+        <% if (user){ %>
+        <h4> Welcome, <span><%= user.facebook.name %></span></h4>
+        <% }else{ %>
+          <span>Please register or login!<br> <a href='/auth/facebook' class='btn btn-primary'><span class='fa fa-facebook'></span> Facebook</a></span>
+          <% }; %>
+
         <div class="input-append">
-            <input id="searchCity" type="text" placeholder="City: Cleveland"/>
+            <input id="searchCity" type="text" placeholder="City: Cleveland" />
             <button type="button" class="btn btn-primary" id="searchBtn">Search</button>
         </div>
-                    <button type="button" class="btn btn-primary" id="showCookie">ShowCookie</button>
+        <button type="button" class="btn btn-primary" id="showCookie">ShowCookie</button>
         <div id="results">
 
-            script for returning and parseing.
         </div>
     </div>
 </body>

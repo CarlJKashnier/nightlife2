@@ -9,9 +9,7 @@
         console.log(socket);
 
         socket.on('yelp stuff', function(data) {
-            //  renderResults(data);
-            $('#results').text(JSON.stringify(data));
-            console.log(JSON.stringify(data));
+              renderData(data);
         });
 
         if (document.cookie.length > 0) {
@@ -24,7 +22,7 @@
         $('#searchBtn').click(function() {
             socket.emit('chat message', $('#searchCity').val());
             document.cookie = "lastSearch=" + $('#searchCity').val();
-            console.log(document.cookie);
+          //  console.log(document.cookie);
             //$('#searchCity').val('');
             return false;
         });
@@ -35,6 +33,24 @@
         });
 
     });
+
+    function renderData(datas){
+      var renderOutputString = "";
+      console.log(datas)
+console.log(datas["id-1"].name)
+for (var i = 1; i<20; i++){
+renderOutputString += "<div><img src='" + datas["id-" + i].image + "'/></div>";
+}
+$('#results').html(renderOutputString);
+  /*    for (var i = 0; i<data.length; i++){
+        console.log(data)
+        image = data[0];
+        console.log(image)
+        renderOutputString += "<div><img src='" +  + "'/></div>"
+      }
+      $('#results').text(renderOutputString);
+      */
+    }
 </script>
 
 

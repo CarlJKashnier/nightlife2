@@ -13,10 +13,9 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var Yelp = require('yelp');
 var async = require('async');
-var returnedData = [];
-var dataToReturn = {};
+var returnedData = {};
+var dataToReturnCount = 0;
 //Keeps track of last Search
-var sess;
 
 var yelp = new Yelp({
     consumer_key: process.env.yelpConsumerKey,
@@ -70,6 +69,7 @@ io.on('connection', function(socket) {
                 location: msg
             })
             .then(function(data) {
+              returnedData = {};
                 var preparedData = renderData(data, clientID);
                 //console.log(prepairedData);
                 //io.to(clientID).emit('yelp stuff',data);
@@ -89,8 +89,9 @@ function renderData(data, clientID) {
     dataToReturn = relevantData;
     //console.log('relevantData',relevantData);
     var i = 1;
+    var dataToReturnCount = 1;
     for (var prop in relevantData) {
-        findDataAndReturn(relevantData[prop].name, relevantData[prop].phone, relevantData[prop].rating, relevantData[prop].snippet_text, relevantData[prop].image_url, clientID);
+        findDataAndReturn(relevantData[prop].name, relevantData[prop].phone, relevantData[prop].rating, relevantData[prop].snippet_text, relevantData[prop].image_url, clientID, i);
         console.log(i);
         i++;
     }
@@ -98,7 +99,7 @@ function renderData(data, clientID) {
 }
 
 
-function findDataAndReturn(name, phone, rating, description, image, clientID) {
+function findDataAndReturn(name, phone, rating, description, image, clientID, idnum) {
     console.log("in find and return");
     mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
         db.collection("nla").findOne({
@@ -106,11 +107,13 @@ function findDataAndReturn(name, phone, rating, description, image, clientID) {
         }, function(err, result) {
             if (result === null) {
 
-                returnedData.push(["name:" + name, "phone:" + phone, "rating:" + rating, "description:" + description, "image:" + image, "count:" + result]);
-                console.log(returnedData.length + ":" + dataToReturn.length);
-                if (returnedData.length == dataToReturn.length) {
-                    io.to(clientID).emit('yelp stuff', JSON.stringify(returnedData));
-                    returnedData = [];
+                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count": 0};
+                dataToReturnCount++;
+                console.log(dataToReturnCount + ":" + dataToReturn.length);
+                if (dataToReturnCount >= dataToReturn.length) {
+                    io.to(clientID).emit('yelp stuff', returnedData);
+                    returnedData = {};
+                    dataToReturnCount= 0;
                     console.log("should be found");
 
                 }
@@ -118,11 +121,13 @@ function findDataAndReturn(name, phone, rating, description, image, clientID) {
 
             } else {
 
-                returnedData.push(["name:" + name, "phone:" + phone, "rating:" + rating, "description:" + description, "image:" + image, "count:" + result.count]);
-                console.log(returnedData.length + ":" + dataToReturn.length);
-                if (returnedData.length == dataToReturn.length) {
-                    io.to(clientID).emit('yelp stuff', JSON.stringify(returnedData));
-                    returnedData = [];
+                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count":result.count};
+                dataToReturnCount++;
+                console.log(dataToReturnCount + ":" + dataToReturn.length);
+                if (dataToReturnCount >= dataToReturn.length) {
+                    io.to(clientID).emit('yelp stuff', returnedData);
+                    returnedData = {};
+                    dataToReturnCount= 0;
                     console.log("should be found");
 
                 }

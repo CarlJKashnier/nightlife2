@@ -26,31 +26,40 @@
             //$('#searchCity').val('');
             return false;
         });
-        $('#showCookie').click(function() {
-            console.log(document.cookie);
-            //$('#searchCity').val('');
-            return false;
-        });
 
-    });
+        $(document.body).on("click",'.btn', function(e) {
+          socket.emit('going', $(this).attr('id'));
+            // Your code here
+        });
 
     function renderData(datas){
       var renderOutputString = "";
-      console.log(datas)
-console.log(datas["id-1"].name)
+<% if (user == undefined) { %>
+var places = []
+<% } else {%>
+var places = <%- user.places.tonight %>;
+<% } %>
+ places = places.toString();
+
 for (var i = 1; i<20; i++){
-renderOutputString += "<div><img src='" + datas["id-" + i].image + "'/></div>";
+var buttonColor = "btn";
+
+if (places.indexOf(datas["id-" + i].phone) != -1){
+  buttonColor = "btn btn-primary'>I'm going with " + (datas["id-" + i].count -1 || 0) + " others!";
+} else {
+  buttonColor = "btn'>"  + (datas["id-" + i].count || 0) +" others are going.";
 }
+<% if (user == undefined) { %>
+  renderOutputString += "<div style='margin: auto;width: 400px;'><img src='" + datas["id-" + i].image + "'/>"+ "<br>Stars: " + datas["id-" + i].rating + " Name: " + datas["id-" + i].name+ ": " + datas["id-" + i].description +"<br><button type='button' id='IGO-" + datas["id-" + i].phone + "-" + "login" + "' class='"+ buttonColor +"</button></div>";
+  }
+<% } else {%>
+  renderOutputString += "<div style='margin: auto;width: 400px;'><img src='" + datas["id-" + i].image + "'/>"+ "<br>Stars: " + datas["id-" + i].rating + " Name: " + datas["id-" + i].name+ ": " + datas["id-" + i].description +"<br><button type='button' id='IGO-" + datas["id-" + i].phone + "-" + <%- user.facebook.id %> + "' class='"+ buttonColor +"</button></div>";
+  }
+<% } %>
+
 $('#results').html(renderOutputString);
-  /*    for (var i = 0; i<data.length; i++){
-        console.log(data)
-        image = data[0];
-        console.log(image)
-        renderOutputString += "<div><img src='" +  + "'/></div>"
-      }
-      $('#results').text(renderOutputString);
-      */
     }
+  })
 </script>
 
 
@@ -77,7 +86,6 @@ $('#results').html(renderOutputString);
             <input id="searchCity" type="text" placeholder="City: Cleveland" />
             <button type="button" class="btn btn-primary" id="searchBtn">Search</button>
         </div>
-        <button type="button" class="btn btn-primary" id="showCookie">ShowCookie</button>
         <div id="results">
 
         </div>

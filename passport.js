@@ -31,7 +31,7 @@ module.exports = function(passport) {
                         return callback(null, user);
                     else {
                         var newUser = new User();
-                        console.log(profile)
+                        console.log(profile);
                         newUser.facebook.id = profile.id;
                         newUser.facebook.token = accessToken;
                         newUser.facebook.name = profile.displayName;

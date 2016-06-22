@@ -78,6 +78,26 @@ io.on('connection', function(socket) {
                 console.error(err);
             });
     });
+
+    socket.on('going', function(msg) {
+        console.log("An update: " + msg);
+/*
+        var clientID = socket.id;
+        yelp.search({
+                term: 'Bar',
+                location: msg
+            })
+            .then(function(data) {
+              returnedData = {};
+                var preparedData = renderData(data, clientID);
+                //console.log(prepairedData);
+                //io.to(clientID).emit('yelp stuff',data);
+            })
+            .catch(function(err) {
+                console.error(err);
+            });
+*/
+    });
 });
 
 //A routes file for all the various routes

@@ -69,7 +69,7 @@ io.on('connection', function(socket) {
                 location: msg
             })
             .then(function(data) {
-              returnedData = {};
+                returnedData = {};
                 var preparedData = renderData(data, clientID);
                 //console.log(prepairedData);
                 //io.to(clientID).emit('yelp stuff',data);
@@ -80,23 +80,8 @@ io.on('connection', function(socket) {
     });
 
     socket.on('going', function(msg) {
-        console.log("An update: " + msg);
-/*
-        var clientID = socket.id;
-        yelp.search({
-                term: 'Bar',
-                location: msg
-            })
-            .then(function(data) {
-              returnedData = {};
-                var preparedData = renderData(data, clientID);
-                //console.log(prepairedData);
-                //io.to(clientID).emit('yelp stuff',data);
-            })
-            .catch(function(err) {
-                console.error(err);
-            });
-*/
+      UpdateStuff(msg);
+
     });
 });
 
@@ -155,4 +140,32 @@ function findDataAndReturn(name, phone, rating, description, image, clientID, id
             }
         });
     });
+}
+
+function UpdateStuff(msg){
+  console.log("An update: " + msg);
+  var message = msg.split("-");
+  mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
+      db.collection("users").findOne({
+          "facebook.id" : message[2]
+      }, function(err, stuff) {
+
+          //check if going
+          var places = stuff.places.tonight;
+          var placesArr = stuff.places.tonight;
+          places = places.toString();
+          console.log(places.indexOf(message[1]));
+          if (places.indexOf(message[1]) != -1){
+//remove from Array
+          db.collection("users").update({"facebook.id" : message[2]}, {$pull: {"places.tonight" : message[1]}});
+          db.collection("nla").update({"phone": message[1]},{$inc: {count: -1}},{upsert: true});
+          } else {
+placesArr.push(message[1]);
+console.log(placesArr);
+          db.collection("users").update({"facebook.id" : message[2]}, {$addToSet: {"places.tonight" : message[1]}});
+          db.collection("nla").update({"phone": message[1]},{$inc: {count: 1}},{upsert: true});
+
+          }
+      });
+  });
 }

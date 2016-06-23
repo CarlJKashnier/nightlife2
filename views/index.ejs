@@ -29,15 +29,21 @@
 
         $(document.body).on("click",'.btn', function(e) {
           socket.emit('going', $(this).attr('id'));
+          setTimeout(emitSearch,1000);
+function emitSearch(){
+  location.reload(true)
+}
+
+          document.cookie = "lastSearch=" + $('#searchCity').val();
             // Your code here
         });
-
+var places = []
     function renderData(datas){
       var renderOutputString = "";
 <% if (user == undefined) { %>
-var places = []
+//not here
 <% } else {%>
-var places = <%- user.places.tonight %>;
+places = <% if(user.places.tonight.length < 1 || user.places.tonight == undefined){%><%- "'yolo'" %><%} else { %><%- "'"+user.places.tonight.toString()+"'" %><%} %>;
 <% } %>
  places = places.toString();
 //updating github test

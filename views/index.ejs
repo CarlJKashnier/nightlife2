@@ -38,6 +38,8 @@ function emitSearch(){
             // Your code here
         });
 var places = []
+
+
     function renderData(datas){
       var renderOutputString = "";
 <% if (user == undefined) { %>
@@ -49,12 +51,15 @@ places = <% if(user.places.tonight.length < 1 || user.places.tonight == undefine
 //updating github test
 for (var i = 1; i<20; i++){
 var buttonColor = "btn";
-
-if (places.indexOf(datas["id-" + i].phone) != -1){
+console.log(datas["id-"+i].who)
+if (!datas["id-"+i].who) {
+  buttonColor = "btn'>"  + (datas["id-" + i].count || 0) +" others are going.";
+} else {
+if (datas["id-"+i].who.indexOf(<%-"'"+user.facebook.id+"'"%>) != -1){
   buttonColor = "btn btn-primary'>I'm going with " + (datas["id-" + i].count -1 || 0) + " others!";
 } else {
   buttonColor = "btn'>"  + (datas["id-" + i].count || 0) +" others are going.";
-}
+}}
 <% if (user == undefined) { %>
   renderOutputString += "<div style='margin: auto;width: 400px;'><img src='" + datas["id-" + i].image + "'/>"+ "<br>Stars: " + datas["id-" + i].rating + " Name: " + datas["id-" + i].name+ ": " + datas["id-" + i].description +"<br><button type='button' id='IGO-" + datas["id-" + i].phone + "-" + "login" + "' class='"+ buttonColor +"</button></div>";
   }

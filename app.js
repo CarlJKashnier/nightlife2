@@ -112,7 +112,7 @@ function findDataAndReturn(name, phone, rating, description, image, clientID, id
         }, function(err, result) {
             if (result === null) {
 
-                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count": 0};
+                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count": 0, "who": 0};
                 dataToReturnCount++;
                 console.log(dataToReturnCount + ":" + dataToReturn.length);
                 if (dataToReturnCount >= dataToReturn.length) {
@@ -126,7 +126,7 @@ function findDataAndReturn(name, phone, rating, description, image, clientID, id
 
             } else {
 
-                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count":result.count};
+                returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count":result.count, "who":result.who};
                 dataToReturnCount++;
                 console.log(dataToReturnCount + ":" + dataToReturn.length);
                 if (dataToReturnCount >= dataToReturn.length) {
@@ -146,24 +146,27 @@ function UpdateStuff(msg){
   console.log("An update: " + msg);
   var message = msg.split("-");
   mongo.connect(process.env.MONGOLAB_URI, function(err, db) {
-      db.collection("users").findOne({
-          "facebook.id" : message[2]
+      db.collection("nla").findOne({
+          "phone" : message[1]
       }, function(err, stuff) {
-
+console.log(stuff);
           //check if going
-          var places = stuff.places.tonight;
-          var placesArr = stuff.places.tonight;
-          places = places.toString();
-          console.log(places.indexOf(message[1]));
-          if (places.indexOf(message[1]) != -1){
-//remove from Array
-          db.collection("users").update({"facebook.id" : message[2]}, {$pull: {"places.tonight" : message[1]}});
-          db.collection("nla").update({"phone": message[1]},{$inc: {count: -1}},{upsert: true});
+          if(stuff===null){
+            var whoTonight = "";
           } else {
-placesArr.push(message[1]);
-console.log(placesArr);
-          db.collection("users").update({"facebook.id" : message[2]}, {$addToSet: {"places.tonight" : message[1]}});
+          var whoTonight = stuff.who;
+}
+          whoTonight = whoTonight.toString();
+          if (whoTonight.indexOf(message[2]) != -1){
+//remove from Array
+
+          db.collection("nla").update({"phone": message[1]},{$inc: {count: -1}},{upsert: true});
+          db.collection("nla").update({"phone": message[1]},{$pull: {"who" : message[2]}},{upsert: true});
+          } else {
+
+
           db.collection("nla").update({"phone": message[1]},{$inc: {count: 1}},{upsert: true});
+          db.collection("nla").update({"phone": message[1]},{$addToSet: {"who" : message[2]}},{upsert: true});
 
           }
       });

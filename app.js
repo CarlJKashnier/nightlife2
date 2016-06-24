@@ -81,7 +81,7 @@ io.on('connection', function(socket) {
 
     socket.on('going', function(msg) {
       UpdateStuff(msg);
-  
+
 
     });
 });
@@ -90,7 +90,7 @@ io.on('connection', function(socket) {
 require('./routes.js')(app, passport);
 
 function renderData(data, clientID) {
-    console.log("in render");
+
     var relevantData = data.businesses;
     dataToReturn = relevantData;
     //console.log('relevantData',relevantData);
@@ -98,7 +98,7 @@ function renderData(data, clientID) {
     var dataToReturnCount = 1;
     for (var prop in relevantData) {
         findDataAndReturn(relevantData[prop].name, relevantData[prop].phone, relevantData[prop].rating, relevantData[prop].snippet_text, relevantData[prop].image_url, clientID, i);
-        console.log(i);
+
         i++;
     }
 
@@ -115,7 +115,7 @@ function findDataAndReturn(name, phone, rating, description, image, clientID, id
 
                 returnedData["id-"+ idnum] = {"name":name, "phone":phone, "rating":rating, "description":description, "image":image, "count": 0, "who": 0};
                 dataToReturnCount++;
-                console.log(dataToReturnCount + ":" + dataToReturn.length);
+
                 if (dataToReturnCount >= dataToReturn.length) {
                     io.to(clientID).emit('yelp stuff', returnedData);
                     returnedData = {};

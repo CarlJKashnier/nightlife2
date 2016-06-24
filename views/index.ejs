@@ -5,7 +5,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
-        var socket = io.connect('http://localhost:8888');
+        var socket = io.connect('https://frozen-reef-10777.herokuapp.com/');
         console.log(socket);
 
         socket.on('yelp stuff', function(data) {

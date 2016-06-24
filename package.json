@@ -1,6 +1,10 @@
 {
   "name": "nightlife",
   "version": "0.1.0",
+  "engines":{
+    "node": "^6.2.1",
+    "npm": "^3.9.3"
+  },
   "description": "A night life coordnation app that relies on the Yelp API to find local bars and MongoDB to store where people are going.",
   "main": "app.js",
   "scripts": {
@@ -32,9 +36,7 @@
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "socket.io": "^1.4.6",
-    "yelp": "^1.0.1",
-    "node": "6.2.1",
-    "npm": "3.9.3"
+    "yelp": "^1.0.1"
   },
   "devDependencies": {
     "dotenv": "^2.0.0",

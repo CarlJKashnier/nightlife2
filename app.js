@@ -80,7 +80,8 @@ io.on('connection', function(socket) {
     });
 
     socket.on('going', function(msg) {
-      UpdateStuff(msg);
+      //UpdateStuff(msg);
+      console.log(msg)
 
     });
 });

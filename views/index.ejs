@@ -28,11 +28,17 @@
         });
 
         $(document.body).on("click",'.btn', function(e) {
-          socket.emit('going', $(this).attr('id'));
-          setTimeout(emitSearch,1000);
-function emitSearch(){
-  location.reload(true)
-}
+          var isLogin = $(this).attr('id')
+          var isLogin = isLogin.split("-")
+          if(isLogin[2] === "login"){
+            console.log("send to login")
+            window.location = "/auth/facebook"
+          } else {
+            console.log("send db update")
+            socket.emit('going', $(this).attr('id'));
+            socket.emit('chat message', $('#searchCity').val());
+          }
+
 
           document.cookie = "lastSearch=" + $('#searchCity').val();
             // Your code here
@@ -42,20 +48,15 @@ var places = []
 
     function renderData(datas){
       var renderOutputString = "";
-<% if (user == undefined) { %>
-//not here
-<% } else {%>
-places = <% if(user.places.tonight.length < 1 || user.places.tonight == undefined){%><%- "'yolo'" %><%} else { %><%- "'"+user.places.tonight.toString()+"'" %><%} %>;
-<% } %>
- places = places.toString();
-//updating github test
+
 for (var i = 1; i<20; i++){
 var buttonColor = "btn";
 console.log(datas["id-"+i].who)
 if (!datas["id-"+i].who) {
   buttonColor = "btn'>"  + (datas["id-" + i].count || 0) +" others are going.";
 } else {
-if (datas["id-"+i].who.indexOf(<%-"'"+user.facebook.id+"'"%>) != -1){
+  <% if (user == undefined) {var who = "login"} else {var who = user.facebook.id} %>
+if (datas["id-"+i].who.indexOf(<%-"'"+who+"'"%>) != -1){
   buttonColor = "btn btn-primary'>I'm going with " + (datas["id-" + i].count -1 || 0) + " others!";
 } else {
   buttonColor = "btn'>"  + (datas["id-" + i].count || 0) +" others are going.";

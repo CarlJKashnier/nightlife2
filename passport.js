@@ -17,7 +17,7 @@ module.exports = function(passport) {
     passport.use(new FacebookStrategy({
             clientID: process.env.facebook_api_key,
             clientSecret: process.env.facebook_api_secret,
-            callbackURL: 'http://localhost:8888/auth/facebook/callback'
+            callbackURL: 'https://frozen-reef-10777.herokuapp.com/auth/facebook/callback'
         },
 
         function(accessToken, refreshToken, profile, callback) {

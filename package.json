@@ -32,7 +32,9 @@
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "socket.io": "^1.4.6",
-    "yelp": "^1.0.1"
+    "yelp": "^1.0.1",
+    "node": "6.2.1",
+    "npm": "3.9.3"
   },
   "devDependencies": {
     "dotenv": "^2.0.0",
